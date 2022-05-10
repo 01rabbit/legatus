@@ -1,8 +1,14 @@
 import empireController as ec
 import Communicator as com
+import subprocess
+from subprocess import PIPE
 from flask import Flask, redirect, render_template, request, url_for
 
 app = Flask(__name__)
+
+def process_action(command):
+    result = subprocess.run(command, shell=True, stdout=PIPE, stderr=PIPE)
+    return(result.stdout.decode('utf-8').split('\n')[0])
 
 @app.route('/' , methods=['GET'])
 def index():
@@ -56,6 +62,26 @@ def empire_agent():
         i = len(agents)
     return render_template('empire_agent.html', agents=agents, i=i)
 
+@app.route('/docker')
+def docker():
+    cmd = "docker-compose -f docker/webssh/docker-compose.yml ps|grep Up|wc -l"
+    webssh_flg = process_action(cmd)
+    cmd = "docker-compose -f docker/mattermost-docker/docker-compose.yml ps|grep Up|wc -l"
+    mattermost_flg = process_action(cmd)
+    return render_template('docker.html',webssh=webssh_flg,mattermost=mattermost_flg)
+
+@app.route('/docker/mattermost')
+def docker_mattermost():
+    cmd = "docker-compose -f docker/mattermost-docker/docker-compose.yml ps|grep Up|wc -l"
+    flg = process_action(cmd)
+    # 3: Up, 0: Down
+    if flg == "3":
+        cmd = "docker-compose -f docker/mattermost-docker/docker-compose.yml stop"
+        process_action(cmd)
+    else:
+        cmd = "docker-compose -f docker/mattermost-docker/docker-compose.yml start"
+        process_action(cmd)
+    return redirect(url_for('docker'))
 
 @app.route('/bot', methods=['POST'])
 def bot_replay():

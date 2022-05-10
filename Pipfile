@@ -8,6 +8,9 @@ flask = "*"
 requests = "*"
 psycopg2 = "*"
 slackweb = "*"
+jinja2 = "*"
+flask-script = "*"
+flask-sqlalchemy = "*"
 
 [dev-packages]
 
