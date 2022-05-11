@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container">
-    <img class="fit-images" src="{{ url_for('static', filename='images/pakuri3-banner.png') }}" alt="">
+    <img class="fit-images" src="{{ url_for('static', filename='images/legatus_banner.png') }}" alt="">
 </div>
 <hr>
     <div class="grid_hostlist">
@@ -11,8 +11,12 @@
             <h3 style="text-align:center">PowerShell-Empire</h3>
         </a>
         <a class="item1" href="{{ url_for('index') }}" role="button">
-            <img src="{{ url_for('static',filename='images/setting.png') }}" style="display: block; margin: auto;" alt="">
-            <h3 style="text-align:center">Tools</h3>
+            <img src="{{ url_for('static',filename='images/kali-tools-icon-missing.svg') }}" style="display: block; margin: auto;" alt="">
+            <h3 style="text-align:center">koadic</h3>
+        </a>
+        <a class="item1" href="{{ url_for('index') }}" role="button">
+            <img src="{{ url_for('static',filename='images/caldera-logo.png') }}" style="display: block; margin: auto;"width="580" alt="">
+            <h3 style="text-align:center">caldera</h3>
         </a>
         <a class="item1" href="http://{{ myip }}:8065" target="_blank" rel="noopener noreferrer" role="button">
             <img src="{{ url_for('static',filename='images/chat.png') }}" style="display: block; margin: auto;" alt="">
@@ -24,3 +28,4 @@
         </a>
     </div>
 <hr>
+{% endblock %}
