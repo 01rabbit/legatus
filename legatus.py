@@ -58,7 +58,7 @@ def empire_stager():
         createStagers = empire.generateStager(token, stagers, outfile)
         output = createStagers[0][0]
         description = createStagers[0][1]
-        path = os.getcwd() + "/download/" + outfile
+        path = DOWNLOAD_DIR_PATH + "/" + outfile
         with open(path, mode='w') as f:
             f.write(output)
     except:
