@@ -1,5 +1,6 @@
 import json
 import base64
+from unittest import result
 import requests
 # import urllib3
 # from urllib3.exceptions import InsecureRequestWarning
@@ -87,6 +88,15 @@ class EmpireController:
             listenrers.append([name,module,host,launcher])
             return(listenrers)
 
+    def getStagerByName(self, token, stagerName):
+        params = (('token', token),)
+        baseEndPoint = "/api/stagers/" + stagerName
+        url = f"{self.args['server']}{baseEndPoint}"
+        response = requests.get(url, params=params, verify=False)
+        result = []
+        result = response.json()['stagers'][0]
+        return result
+
     def killListener(self, token):
         params = (('token', token),)
         baseEndPoint = f"/api/listeners/{self.args['listenername']}"
@@ -102,14 +112,14 @@ class EmpireController:
         finally:
             return(value)
 
-    def generateStager(self, token, stagerName):
+    def generateStager(self, token, stagerName, outfile):
         params = (('token', token),)
         baseEndPoint = "/api/stagers"
         url = f"{self.args['server']}{baseEndPoint}"
         data = {
             "StagerName":stagerName,
             "Listener":self.args['listenername'],
-            "OutFile":"/tmp/test"
+            "OutFile":"/tmp/" + outfile
             }
         payload = json.dumps(data)
         response = requests.post(url, headers=self.header, params=params, data=payload, verify=False)
@@ -123,10 +133,11 @@ class EmpireController:
                     outstr = result[stagerName]['Output']
 
                 description = result[stagerName]['OutFile']['Description']
+                filename = result[stagerName]['OutFile']['Value']
         except(KeyError):
             outstr, description = '',''
         finally:
-            stagers.append([outstr,description])
+            stagers.append([outstr,description,filename])
             return(stagers)
 
     def getCurrentAgents(self, token):
@@ -158,3 +169,12 @@ class EmpireController:
         else:
             agents.append(['','','','','','','','','',''])
         return(agents)
+
+if __name__ == "__main__":
+    empire = EmpireController()
+    token = empire.getEmpireToken()
+    print(token)
+    stagerName = "osx/jar"
+    res = empire.getCurrentStagers(token, stagerName)
+    v=res['options']['OutFile']['Value']
+    print(v)

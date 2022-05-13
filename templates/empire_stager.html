@@ -30,11 +30,18 @@
         <h4>Output File description : </h4>
         <label>{{ description }}</label>
     </p>
+    <div class="container">
+        <form action="/empire_stager_output" method="POST">
+            <input type="text" id="generateCommand" name="stagerOutput" value={{ output }} hidden></input>
+            <input type="text" id="generateFileName" name="stagerFileName" value={{ outputfile }} hidden></input>
+            <button type="submit" id="sendCommand" class="ostype btn btn-primary"><i class='bx bxs-file-plus'></i><br>Generate</button>
+        </form>
+    </div>
     <h4>Information : </h4>
     <p>Once you have copied the payload to the clipboard by pressing Copy, create a Stager file using the default file name as a reference.<p>
     <div class="container">
         <button class="ostype btn btn-success" onclick="copyToClipboard()" ><i class='bx bx-copy-alt' ></i><br>Copy</button>
-        <button class="ostype btn btn-success" onclick="location.href='{{ url_for('empire_home') }}'"><i class='bx bx-eraser'></i><br>Clear</button>
+        <button class="ostype btn btn-success" onclick="location.href='{{ url_for('empire_home') }}'"><i class='bx bx-eraser'></i><br>Clear</button>    
     </div>
     <hr>
 {% endblock %}

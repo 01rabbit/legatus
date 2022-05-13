@@ -1,8 +1,12 @@
+from logging import exception
+import os
 import empireController as ec
 import Communicator as com
 import subprocess
 from subprocess import PIPE
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, redirect, render_template, request, url_for, send_file
+
+DOWNLOAD_DIR_PATH = os.path.join(os.path.dirname(__file__), 'download')
 
 app = Flask(__name__)
 
@@ -46,10 +50,34 @@ def empire_stager():
     token = empire.getEmpireToken()
     stagers = request.form.get('setStager')
     listener = request.form.get('setListener')
-    createStagers = empire.generateStager(token,stagers)
-    output = createStagers[0][0]
-    description = createStagers[0][1]
-    return render_template('empire_stager.html', listener=listener, stagers=stagers, output=output, description=description)
+    outfile = empire.getStagerByName(token, stagers)['options']['OutFile']['Value']
+    try:
+        outfile = os.path.basename(outfile)
+    except:
+        outfile = "empire.bin"
+    try:
+        createStagers = empire.generateStager(token, stagers, outfile)
+        output = createStagers[0][0]
+        description = createStagers[0][1]
+        path = os.getcwd() + "/download/" + outfile
+        with open(path, mode='w') as f:
+            f.write(output)
+    except:
+        output = "Error"
+        description = "Error"
+    # filename = createStagers[0][2]
+    # path = os.getcwd() + "/download" + filename
+
+    return render_template('empire_stager.html', listener=listener, stagers=stagers, output=output, description=description, outputfile=outfile)
+
+@app.route('/empire_stager_output',methods=['POST'])
+def empire_stager_output():
+    output = request.form.get('stagerOutput')
+    filename = request.form.get('stagerFileName')
+    path = os.getcwd() + "/download" + filename
+    with open(path, mode='w') as f:
+        f.write(output)
+    return send_file(path, as_attachment=True, attachment_filename=filename)
 
 @app.route('/empire_agent')
 def empire_agent():
