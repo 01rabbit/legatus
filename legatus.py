@@ -1,5 +1,7 @@
 from logging import exception
 import os
+
+from urllib3 import Retry
 import empireController as ec
 import Communicator as com
 import subprocess
@@ -111,11 +113,28 @@ def docker_mattermost():
         process_action(cmd)
     return redirect(url_for('docker'))
 
+@app.route('/docker/webssh')
+def docker_webssh():
+    cmd = "docker-compose -f docker/webssh/docker-compose.yml ps|grep Up|wc -l"
+    flg = process_action(cmd)
+    # 1: Up, 0: Down
+    if flg == "1":
+        cmd = "docker-compose -f docker/webssh/docker-compose.yml stop"
+        process_action(cmd)
+    else:
+        cmd = "docker-compose -f docker/webssh/docker-compose.yml start"
+        process_action(cmd)
+    return redirect(url_for('docker'))
+
 @app.route('/bot', methods=['POST'])
 def bot_replay():
     comm = com.Communicator()
     comm.ChatCommunication()
     return
+
+@app.route('/test')
+def test():
+    return render_template('test.html')
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5566)
